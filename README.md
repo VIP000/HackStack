@@ -20,7 +20,7 @@ HackStack is built on the shoulders of giants and uses a number of libraries:
 
 * [Composer](https://github.com/composer/composer) for managing dependencies
 * [Slim](https://github.com/composer/composer) as a lightweight routing engine and template renderer
-* [Slim-Skeleton](https://github.com/codeguy/Slim-Skeleton) for common Slim components and setup
+* [Slim-Skeleton](https://github.com/codeguy/Slim-Skeleton) for common Slim components and setup, which includes:
     * [Monolog](https://github.com/Seldaek/monolog) for logging
     * [Twig](https://github.com/fabpot/Twig) for templating
     * [Slim-Views](https://github.com/codeguy/Slim-Views) for rendering Twig templates
