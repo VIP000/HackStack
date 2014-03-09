@@ -8,9 +8,9 @@
 <div class="site clearfix">
 	<div class="context-loader-container" id="site-container">
 		<div id="login" class="auth-form">
-			<form method="post" action="/authorize" accept-charset="UTF-8">
+			<form method="POST" action="/authorize" accept-charset="UTF-8">
 				<div style="margin:0;padding:0;display:inline">
-					<input type="hidden" value="{{ session_token }}" name="authenticity_token">
+					<input type="hidden" value="{{ csrf_token }}" name="authenticity_token">
 				</div>
 				<div class="auth-form-header">
 					<h1>Sign in</h1>
@@ -18,7 +18,7 @@
 				<div class="auth-form-body">
 					<label for="login_field">Username or Email</label>
 					<input type="text" tabindex="1" name="login" id="login_field" class="input-block" autofocus="autofocus" autocapitalize="off">
-					<label for="password">Password <a href="/authorize/forgot_password">(forgot password)</a></label>
+					<label for="password">Password <a href="/forgot">(forgot password)</a></label>
 					<input type="password" tabindex="2" name="password" id="password" class="input-block">
 					<input type="submit" value="Sign in" tabindex="3" name="commit" class="button">
 				</div>
