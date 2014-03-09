@@ -59,24 +59,33 @@
 		$logNameDate = $currentDate->format("Y-M-d");
 		
 		/**
-		 * Setup a general application log
+		 * Add a processor for the format of log lines
 		 */
-		$log->pushHandler(
-			new \Monolog\Handler\StreamHandler(
-				$ApplicationRoot . "/logs/" . $logNameDate ."-all.log", 
-				\Monolog\Logger::DEBUG
-			)
+		$lineFormatter = new \Monolog\Formatter\LineFormatter(
+			"[%datetime%] %level_name% : %message%\n\tcontext: %context%\n\textra data: %extra%\n",
+			null,
+			true
 		);
 
 		/**
-		 * Setup an error log
+		 * Setup a general application log using the the line formatter
 		 */
-		$log->pushHandler(
-			new \Monolog\Handler\StreamHandler(
-				$ApplicationRoot . "/logs/" . $logNameDate ."-error.log",
-				\Monolog\Logger::ERROR
-			)
+		$accessStreamHandler = new \Monolog\Handler\StreamHandler(
+			$ApplicationRoot . "/logs/" . $logNameDate ."-access.log", 
+			\Monolog\Logger::DEBUG
 		);
+		$accessStreamHandler->setFormatter($lineFormatter);
+		$log->pushHandler($accessStreamHandler);
+
+		/**
+		 * Setup the separate error log using the the line formatter
+		 */
+		$errorStreamHandler = new \Monolog\Handler\StreamHandler(
+			$ApplicationRoot . "/logs/" . $logNameDate ."-error.log",
+			\Monolog\Logger::ERROR
+		);
+		$errorStreamHandler->setFormatter($lineFormatter);
+		$log->pushHandler($errorStreamHandler);
 		
 		return $log;
 	});
