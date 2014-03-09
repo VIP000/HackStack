@@ -8,10 +8,12 @@ While built with hackathons and MVPs in mind, HackStack uses production ready co
 ## Features
 
 Baked in:
+
 * Dyanamic URL routing
 * Twig templating with automatic caching
 * Logging with automatic rotation and separate access and error logs
-* Pre-configured templates and routing for: 
+* Pre-configured templates and routing for:
+
 	* 500, 404, and 403 HTTP errors
 	* User authentication
 * Cross-browser styling and consistency
