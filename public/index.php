@@ -106,33 +106,25 @@
 	$app->view->parserExtensions = array(new \Slim\Views\TwigExtension());
 /* ======================================================================================= */
 
-/* ====================================== Request URL Parsing ====================================== */
-	/**
-	 * Split out components of the request URL
-	 */
-	$RequestUrl = $app->request->getResourceUri();
-		$app->log->debug("RequestUrl is {" . $RequestUrl . "}");
-	$RequestUrlParts = explode("/", $RequestUrl);
-	$BaseUrl = ((count($RequestUrlParts) > 1) ? $RequestUrlParts[1] : "");
-		$app->log->debug("BaseUrl is {" . $BaseUrl . "}", Array("RequestUrlParts" => $RequestUrlParts));
-/* ================================================================================================= */
-
 /* ====================================== Routes File Loading ====================================== */
+	/**
+	 * Log the incoming URL request
+	 */
+	$app->log->debug("Requested resource URI is {" . $app->request->getResourceUri() . "}");
 	
 	/**
-	 * Always load the root resource routes file
-	 */	
-	require($ApplicationRoot . "/routes/root.routes.php");
-
-	/**
-	 * Autoload non-root routes files depending on the requested resource
+	 * Loads all *.routes.php files in the routes folder by default as it's safer than dynamically loading
+	 * 
 	 * NOTE: URIs that do not match a route will automatically be routed to the notFound handler and redirected to /404
-	 */
-	if(!empty($BaseUrl)) {
-		if(file_exists($ApplicationRoot . "/routes/" . $BaseUrl . ".routes.php")) {
-			$app->log->debug("Loading the " . $BaseUrl . ".routes file");
-			require($ApplicationRoot . "/routes/" . $BaseUrl . ".routes.php");
+	 */	
+	$routesCollections = glob($ApplicationRoot . "/routes/*.routes.php");
+	if($routesCollections !== false) {
+		foreach($routesCollections as $routesCollection) {
+			$app->log->debug("Loading the Routes collection at {" . $routesCollection . "}");
+			require($routesCollection);
 		}
+	} else {
+		$app->log->error("An error was encountered finding the collection of routes files to load");
 	}
 /* ================================================================================================= */
 
@@ -140,5 +132,3 @@
  * Run the slim app
  */
 $app->run();
-
-?>
