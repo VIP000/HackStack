@@ -4,14 +4,20 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>{% block title %}Welcome to hackstack{% endblock %}</title>
-		<link rel="stylesheet" href="/css/normalize.css">
-		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-		<link rel="stylesheet" href="/css/app.css">
 		<link rel="shortcut icon" href="/images/favicon.ico">
+		<link rel="stylesheet" href="/css/core/normalize.css">
+		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+		<link rel="stylesheet" href="/css/core/simple-line-icons.css">
+		<link rel="stylesheet" href="/css/app/core.css">
 
 		<!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
 		<!--[if lt IE 9]>
-		  <script src="/javascript/html5shiv.js"></script>
+			<script src="/javascript/core/ie/html5shiv.js"></script>
+		<![endif]-->
+
+		<!-- IE7 support of the icons font. -->
+		<!--[if lte IE 7]>
+			<script src="/javascript/core/ie/icons-lte-ie7.js"></script>
 		<![endif]-->
 	</head>
 	<body>
