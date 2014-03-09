@@ -1,0 +1,21 @@
+*~
+
+# OS X system files
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows System files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# App specific
+templates/cache/
+!templates/cache/README.md
+logs/
+!logs/README.md
