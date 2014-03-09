@@ -1,6 +1,10 @@
 {% extends "base.twig" %}
 
 {% block title %}Welcome back!{% endblock %}
+
+{# Turn off the sign in button when already on the sign in page #}
+{% set show_sign_in = false %}
+
 {% block content %}
 <div class="site clearfix">
 	<div data-pjax-container="" class="context-loader-container" id="site-container">

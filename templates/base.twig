@@ -16,6 +16,26 @@
 	</head>
 	<body>
 		<div class="wrapper">
+			{% block navbar %}
+				<nav role="navigation" class="navbar navbar-default">
+					<div class="container-fluid">
+						<div class="navbar-header">
+							<button data-target="#button-sign-in" data-toggle="collapse" class="navbar-toggle" type="button">
+								<span class="sr-only">Toggle navigation</span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+							</button>
+							<a href="#" class="navbar-brand">App Name</a>
+						</div>
+						{% if (show_sign_in is not defined) or (show_sign_in != false) %}
+							<div id="button-sign-in" class="collapse navbar-collapse navbar-right">
+								<button class="btn btn-default navbar-btn" type="button">{{ ((signed_in is defined) and (signed_in == true)) ? "Sign out" : "Sign in" }}</button>
+							</div>
+						{% endif %}
+					</div>
+				</nav>
+			{% endblock %}
 			{% block content %}
 				<h2>Hackstack Homepage</h2>
 			{% endblock %}
