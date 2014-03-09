@@ -2,6 +2,12 @@
 
 {% block title %}Can I see your invitation?{% endblock %}
 {% block content %}
-	<h2>Sorry, this area is closed for a private party</h2>
-	<p>{{ flash.error }}</p>
+<div class="site clearfix">
+	<div class="context-loader-container" id="site-container">
+		<div id="http-status-container" class="component-status-container">
+			<h2>Sorry, this area is closed for a private party</h2>
+			<p>{{ flash.error }}</p>
+		</div>
+	</div>
+</div>
 {% endblock %}

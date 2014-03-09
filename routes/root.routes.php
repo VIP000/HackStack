@@ -22,6 +22,7 @@
 	});
 
 	$app->get('/403', function() use ($app) {
+		$app->flashNow("error", "Sorry, looks like you don't have the proper permissions for that.");
 		$app->render("403.twig");
 	});
 
