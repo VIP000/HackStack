@@ -1,0 +1,7 @@
+{% extends "base.twig" %}
+
+{% block title %}That would be an error...we're sorry.{% endblock %}
+{% block content %}
+	<h2>Huh...well that was unexpected</h2>
+	<p>{{ flash.error }}</p>
+{% endblock %}
