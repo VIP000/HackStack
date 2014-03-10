@@ -32,6 +32,7 @@ Additionally, the following services and other attributions have contributed:
 
 * [Bootstrap CDN](http://www.bootstrapcdn.com) for CDN sources of bootstrap and jquery
 * [Github](http://www.github.com) for the structure of a number of elements including the sign in element
+* [Simple Line Icon Webfont](http://graphicburger.com/simple-line-icons-webfont/) for awesome clean icons
 
 ## How to Contribute
 
