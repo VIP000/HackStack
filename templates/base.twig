@@ -37,7 +37,11 @@
 						{% if (show_sign_in is not defined) or (show_sign_in != false) %}
 							<div id="button-sign-in" class="collapse navbar-collapse navbar-right">
 								<form method="GET" action="/{{ ((signed_in is defined) and (signed_in == true)) ? "signout" : "signin" }}" accept-charset="UTF-8">
-									<button class="btn btn-default navbar-btn" type="submit">{{ ((signed_in is defined) and (signed_in == true)) ? "Sign out" : "Sign in" }}</button>
+									{% if (signed_in is defined) and (signed_in == true) %}
+										<button class="btn btn-default navbar-btn" type="submit">Sign Out <span class="icon-lock-open" data-icon="&#xe08f;"></span></button>
+									{% else %}
+										<button class="btn btn-default navbar-btn" type="submit">Sign In <span class="icon-lock" data-icon="&#xe08e;"></span></button>
+									{% endif %}
 								</form>
 							</div>
 						{% endif %}
