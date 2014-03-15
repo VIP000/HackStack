@@ -11,4 +11,10 @@ return array(
     'Slim' => array($vendorDir . '/slim/slim'),
     'Psr\\Log\\' => array($vendorDir . '/psr/log'),
     'Monolog' => array($vendorDir . '/monolog/monolog/src'),
+    'Illuminate\\Support' => array($vendorDir . '/illuminate/support'),
+    'Illuminate\\Events' => array($vendorDir . '/illuminate/events'),
+    'Illuminate\\Database' => array($vendorDir . '/illuminate/database'),
+    'Illuminate\\Container' => array($vendorDir . '/illuminate/container'),
+    'Cartalyst\\Sentry' => array($vendorDir . '/cartalyst/sentry/src'),
+    'Carbon' => array($vendorDir . '/nesbot/carbon/src'),
 );
