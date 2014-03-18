@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "d89754689a3f6f83f4236f4ee7822ad5",
+    "hash": "74df9e00799740d3e3a583fa36970952",
     "packages": [
         {
             "name": "cartalyst/sentry",
@@ -311,6 +311,72 @@
                 }
             ],
             "time": "2013-11-20 14:44:26"
+        },
+        {
+            "name": "indeyets/pake",
+            "version": "1.99.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/indeyets/pake.git",
+                "reference": "410d0d5c18bb3438d323570fdb502402aa7a1aba"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/indeyets/pake/zipball/410d0d5c18bb3438d323570fdb502402aa7a1aba",
+                "reference": "410d0d5c18bb3438d323570fdb502402aa7a1aba",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "php": ">=5.2.1"
+            },
+            "require-dev": {
+                "simpletest/simpletest": "1.1.*"
+            },
+            "suggest": {
+                "ext-bz2": "*",
+                "ext-pcntl": "*",
+                "ext-phar": "*",
+                "ext-posix": "*",
+                "ext-zlib": "*",
+                "phing/phing": "2.4.*",
+                "simpletest/simpletest": "1.1.*"
+            },
+            "bin": [
+                "bin/pake"
+            ],
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "lib/pake/autoload.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien.potencier@symfony-project.org",
+                    "homepage": "http://fabien.potencier.org/",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Alexey Zakhlestin",
+                    "email": "indeyets@gmail.com",
+                    "homepage": "https://indeyets.ru/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "PHP automation tool inspired by Rake",
+            "homepage": "https://github.com/indeyets/pake/wiki",
+            "keywords": [
+                "automation",
+                "build",
+                "task"
+            ],
+            "time": "2013-11-04 08:29:46"
         },
         {
             "name": "ircmaxell/password-compat",

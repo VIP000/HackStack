@@ -1,0 +1,48 @@
+{
+    "name": "indeyets/pake",
+    "description": "PHP automation tool inspired by Rake",
+    "keywords": ["automation", "build", "task"],
+    "authors": [
+        {
+             "name": "Alexey Zakhlestin",
+             "email": "indeyets@gmail.com",
+             "homepage": "https://indeyets.ru/",
+             "role": "Developer"
+        },
+        {
+             "name": "Fabien Potencier",
+             "email": "fabien.potencier@symfony-project.com",
+             "homepage": "http://fabien.potencier.org/",
+             "role": "Developer"
+        }
+    ],
+    "homepage": "https://github.com/indeyets/pake/wiki",
+    "license": "MIT",
+    "support": {
+        "email": "pake@googlegroups.com",
+        "issues": "https://github.com/indeyets/pake/issues",
+        "forum": "https://groups.google.com/forum/?fromgroups#!forum/pake",
+        "wiki": "https://github.com/indeyets/pake/wiki",
+        "source": "https://github.com/indeyets/pake"
+    },
+    "require": {
+        "php": ">=5.2.1",
+        "ext-mbstring": "*"
+    },
+    "require-dev": {
+        "simpletest/simpletest": "1.1.*"
+    },
+    "suggest": {
+        "ext-bz2": "*",
+        "ext-pcntl": "*",
+        "ext-phar": "*",
+        "ext-posix": "*",
+        "ext-zlib": "*",
+        "phing/phing": "2.4.*",
+        "simpletest/simpletest": "1.1.*"
+    },
+    "autoload": {
+        "files": ["lib/pake/autoload.php"]
+    },
+    "bin": ["bin/pake"]
+}

@@ -18,7 +18,8 @@
 		"twig/twig": "1.*",
 		"cartalyst/sentry": "2.0.*",
 		"illuminate/database": "4.0.*",
-		"ircmaxell/password-compat": "1.0.*"
+		"ircmaxell/password-compat": "1.0.*",
+		"indeyets/pake": "~1.99"
 	},
 	"minimum-stability": "stable"
 }
