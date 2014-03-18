@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Internal singleton class that provides some useful helpers and configurations
+ * Internal singleton class that provides some useful helpers and config
  */
 class HackStackHelper {
 
@@ -67,8 +67,30 @@ function run_setup() {
 		$HSH->status($HSH::TWO, "No lock file found, continuing with first time setup");
 		// Find the yaml configuration file
 		if(file_exists(__DIR__ . "/configuration/databases.yml")) {
-			$configurations = pakeYaml::loadFile(__DIR__ . "/configuration/databases.yml");
-			if(isset($configurations["developmen"]) && !empty($configurations["development"])) {
+			$config = pakeYaml::loadFile(__DIR__ . "/configuration/databases.yml");
+			$HSH->status($HSH::TWO, "Database configuration loading from the yaml file");
+			if(isset($config["development"]) && !empty($config["development"])) {
+				$params = $config["development"];
+				$params["host"] = ($params["host"] === "") ? null : $params["host"];
+				$params["port"] = ($params["port"] === "") ? 3306 : intval($params["port"]);
+				$params["database"] = ($params["database"] === "") ? "hackstack" : $params["database"];
+
+				$sql = new pakeMySQL($params["username"], $params["password"], $params["host"], $params["port"]);
+				$HSH->status($HSH::THREE, "Connected to the configured database for the {development} environment");
+				
+				$HSH->status($HSH::THREE, "Wiping and rebuilding the {" . $params["database"] . "} database if it exists");
+				$sql->dropDatabase($params["database"]);
+				$sql->createDatabase($params["database"]);
+
+				$HSH->status($HSH::THREE, "Running the Sentry schema setup SQL script");
+
+				$sentryBuildStatements = file_get_contents(__DIR__ . "/vendor/cartalyst/sentry/schema/mysql.sql");
+				if($sentryBuildStatements !== false) {
+					$sql->sqlExec("USE " . $params["database"] . "; " . $sentryBuildStatements);
+					$HSH->status($HSH::THREE, "Sentry tables have been built!");
+				} else {
+					$HSH->status($HSH::THREE, "Loading in the build statements for the Sentry tables failed. You should check that {" . __DIR__ . "/vendor/cartalyst/sentry/schema/mysql.sql} exists.", 'ERROR');
+				}
 
 			} else {
 				$HSH->status($HSH::TWO, "No database config for the {development} environment", 'ERROR');
