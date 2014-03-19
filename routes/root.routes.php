@@ -54,6 +54,8 @@
 			// 	No; attempt sign in with given validated parameters
 				// On success, redirect to internal home
 				// On failure, redirect to sign in with failure flash
+		$app->flash("error", "It looks like that wasn't quite right. Try again.");
+		$app->redirect("/signin");
 	});
 
 /* ================================================================================================= */
@@ -63,7 +65,7 @@
 	 * Renders the unauthorized page for HTTP 403 error codes
 	 */
 	$app->get('/403', function() use ($app) {
-		$app->flashNow("error", "Sorry, looks like you don't have the proper permissions for that.");
+		$app->flashNow("error", "You don't have the proper permissions for that.");
 		$app->render("403.twig");
 	});
 
@@ -71,7 +73,7 @@
 	 * Renders the not found page for HTTP 404 error codes
 	 */
 	$app->get('/404', function() use ($app) {
-		$app->flashNow("error", "Sorry, it looks like the resource you requested doesnt exist.");
+		$app->flashNow("error", "Looks like the resource you requested doesnt exist.");
 		$app->render("404.twig");
 	});
 
