@@ -62,7 +62,18 @@ class pakeMySQL
         }
     }
 
-    public function sqlExec($sql)
+
+    private function cliCommandPrefix()
+    {
+        return escapeshellarg($this->db)
+                .' --force'
+                .' --host='.escapeshellarg($this->more['host'])
+                .' --port='.escapeshellarg($this->more['port'])
+                .' --user='.escapeshellarg($this->more['login'])
+                .' --password='.escapeshellarg($this->more['password']);
+    }
+
+    private function sqlExec($sql)
     {
         if ($this->mode == 'pdo') {
             $this->db->exec($sql);
@@ -82,15 +93,5 @@ class pakeMySQL
             }
             pake_echo_action('mysql', $sql);
         }
-    }
-
-    private function cliCommandPrefix()
-    {
-        return escapeshellarg($this->db)
-                .' --force'
-                .' --host='.escapeshellarg($this->more['host'])
-                .' --port='.escapeshellarg($this->more['port'])
-                .' --user='.escapeshellarg($this->more['login'])
-                .' --password='.escapeshellarg($this->more['password']);
     }
 }
