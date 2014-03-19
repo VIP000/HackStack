@@ -1,14 +1,22 @@
 
 development:
+    driver: mysql
     host: localhost
     port: 3306
     username: hackstack
-    password: 
+    password: hackstack
     database: hackstack
+    charset: utf8
+    collation: utf8_unicode_ci
+    prefix: ''
 
 production:
+    driver: mysql
     host: localhost
     port: 3306
     username: hackstack
     password: 
     database: hackstack
+    charset: utf8
+    collation: utf8_unicode_ci
+    prefix: ''
