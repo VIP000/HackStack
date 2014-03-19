@@ -1,51 +1,7 @@
 <?php
 
-/**
- * Internal singleton class that provides some useful helpers and config
- */
-class HackStackHelper {
-
-	/**
-	 * Constants to control the status message spacing multipliers
-	 */
-	const ONE = 0;
-	const TWO = 2;
-	const THREE = 4;
-	const FOUR = 6;
-	const FIVE = 8;
-
-	/**
-	 * Instance of the singleton helper
-	 * @var instance 	HackStackHelper
-	 */
-	private static $instance;
-
-	private function __construct() {}
-
-	/**
-	 * Returns the current instance and initializes a new one if it doesnt exist
-	 * @return HackStackHelper
-	 */
-	public static function getInstance() {
-		if(is_null(self::$instance)) {
-			self::$instance = new self();
-		}
-
-		return self::$instance;
-	}
-
-	/**
-	 * Helper to output a status message, formatted according to message child depth and logging level
-	 */
-	public function status($multiplier, $message, $level = 'INFO') {
-		$linePrefix = "> ";
-		if(is_integer($multiplier) && ($multiplier > 0)) {
-			$linePrefix = (str_repeat(" ", $multiplier) . ">" . str_repeat(">", $multiplier / 2) . " ");
-		}
-
-		echo pakeColor::colorize($linePrefix . $message, $level) . "\n";
-	}
-}
+require(__DIR__ . "/vendor/autoload.php");
+use Illuminate\Database\Capsule\Manager as Capsule;
 
 pake_task("default");
 function run_default() {
@@ -58,49 +14,36 @@ function run_default() {
 pake_task("setup");
 pake_desc("Runs the one time setup operations for your hackstack");
 function run_setup() {
-	$HSH = HackStackHelper::getInstance();
+	$helper = \Hackstack\Helpers\PakeHelper::getInstance();
+	$root = $helper->getAppRoot();
 
-	$HSH->status($HSH::ONE, "Verifying setup has not already occurred");
+	$helper->status($helper::ONE, "Verifying setup has not already occurred");
 
 	// Check for the hackstack.lock file
 	if(!file_exists(__DIR__ . "/hackstack.lock")) {
-		$HSH->status($HSH::TWO, "No lock file found, continuing with first time setup");
-		// Find the yaml configuration file
-		if(file_exists(__DIR__ . "/configuration/databases.yml")) {
-			$config = pakeYaml::loadFile(__DIR__ . "/configuration/databases.yml");
-			$HSH->status($HSH::TWO, "Database configuration loading from the yaml file");
-			if(isset($config["development"]) && !empty($config["development"])) {
-				$params = $config["development"];
-				$params["host"] = ($params["host"] === "") ? null : $params["host"];
-				$params["port"] = ($params["port"] === "") ? 3306 : intval($params["port"]);
-				$params["database"] = ($params["database"] === "") ? "hackstack" : $params["database"];
+		$helper->status($helper::TWO, "No lock file found, continuing with first time setup");
+		
+		// Setup the database
+		$helper->status($helper::TWO, "Looking for configuration file and using to create a database connection");
+		try {
+			$db = \Hackstack\Helpers\DatabaseHelper::getInstance();
+			$helper->status($helper::THREE, "Connection established, dropping the {hackstack} database and rebuilding it");
+			
+			Capsule::statement("DROP DATABASE hackstack;");
+			Capsule::statement("CREATE DATABASE hackstack;");
 
-				$sql = new pakeMySQL($params["username"], $params["password"], $params["host"], $params["port"]);
-				$HSH->status($HSH::THREE, "Connected to the configured database for the {development} environment");
-				
-				$HSH->status($HSH::THREE, "Wiping and rebuilding the {" . $params["database"] . "} database if it exists");
-				$sql->dropDatabase($params["database"]);
-				$sql->createDatabase($params["database"]);
-
-				$HSH->status($HSH::THREE, "Running the Sentry schema setup SQL script");
-
-				$sentryBuildStatements = file_get_contents(__DIR__ . "/vendor/cartalyst/sentry/schema/mysql.sql");
-				if($sentryBuildStatements !== false) {
-					$sql->sqlExec("USE " . $params["database"] . "; " . $sentryBuildStatements);
-					$HSH->status($HSH::THREE, "Sentry tables have been built!");
-				} else {
-					$HSH->status($HSH::THREE, "Loading in the build statements for the Sentry tables failed. You should check that {" . __DIR__ . "/vendor/cartalyst/sentry/schema/mysql.sql} exists.", 'ERROR');
-				}
+			$helper->status($helper::THREE, "Starting Sentry setup");
+			if(file_exists($root . "/vendor/cartalyst/Sentry/schema/mysql.sql")) {
+				Capsule::connection()->getPdo()->exec("USE hackstack;" . file_get_contents($root . "/vendor/cartalyst/Sentry/schema/mysql.sql"));
+				$helper->status($helper::THREE, "Sentry tables have been built!");
 
 			} else {
-				$HSH->status($HSH::TWO, "No database config for the {development} environment", 'ERROR');
+				$helper->status($helper::THREE, "No Sentry build script exists at {" . $root . "/vendor/cartalyst/Sentry/schema/mysql.sql}", "ERROR");
 			}
-		} else {
-			$HSH->status($HSH::TWO, "No database yaml config file present at {" . __DIR__ . "/configuration/databases.yml}", 'ERROR');
-			$HSH->status($HSH::TWO, "Abandoning setup", 'ERROR');
+		} catch(Exception $e) {
+			$helper->status($helper::THREE, $e->getMessage(), 'ERROR');
+			$helper->status($helper::TWO, "Abandoning setup", 'ERROR');
 		}
-		// Setup the database
-
 			// Run the sentry script
 			// Prompt to fill with test data
 		// Setup log directory symlink for

@@ -21,5 +21,10 @@
 		"ircmaxell/password-compat": "1.0.*",
 		"indeyets/pake": "~1.99"
 	},
+	"autoload": {
+		"psr-4": {
+			"Hackstack\\Helpers\\" : "lib/"
+		}
+	},
 	"minimum-stability": "stable"
 }
