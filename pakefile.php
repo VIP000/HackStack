@@ -16,6 +16,7 @@ pake_desc("Runs the one time setup operations for your hackstack");
 function run_setup() {
 	$helper = \Hackstack\Helpers\PakeHelper::getInstance();
 	$root = $helper->getAppRoot();
+	$currentDatetime = new DateTime();
 
 	$helper->status($helper::ONE, "Verifying setup has not already occurred");
 
@@ -34,9 +35,22 @@ function run_setup() {
 
 			$helper->status($helper::THREE, "Starting Sentry setup");
 			if(file_exists($root . "/vendor/cartalyst/Sentry/schema/mysql.sql")) {
+				// Run the sentry script
 				Capsule::connection()->getPdo()->exec("USE hackstack;" . file_get_contents($root . "/vendor/cartalyst/Sentry/schema/mysql.sql"));
 				$helper->status($helper::THREE, "Sentry tables have been built!");
 
+				// Prompt to fill with test data
+
+				// Setup log directory symlinks
+				$helper->status($helper::TWO, "Beginning setup of log file symlinks");
+					// Latest access log
+					// Latest error log
+
+				// Setup logrotate
+				// Setup cron (if any)
+				// Create hackstack.lock
+				file_put_contents(__DIR__ . "/hackstack.lock", "Lock file generated " . $currentDatetime->format("Y-m-d H:i:s"));
+				$helper->status($helper::ONE, "Lockfile generated. Setup completed.");
 			} else {
 				$helper->status($helper::THREE, "No Sentry build script exists at {" . $root . "/vendor/cartalyst/Sentry/schema/mysql.sql}", "ERROR");
 			}
@@ -44,14 +58,6 @@ function run_setup() {
 			$helper->status($helper::THREE, $e->getMessage(), 'ERROR');
 			$helper->status($helper::TWO, "Abandoning setup", 'ERROR');
 		}
-			// Run the sentry script
-			// Prompt to fill with test data
-		// Setup log directory symlink for
-			// Latest access log
-			// Latest error log
-		// Setup logrotate
-		// Setup cron (if any)
-		// Create hackstack.lock
 	} else {
 		pake_echo_error("Aborting initial setup to avoid potential data loss");
 		pake_echo_error("The hackstack.lock file exists in the root; this means initial setup has already been run. Remove this file if you would like to re-run initial setup");
