@@ -43,8 +43,28 @@ function run_setup() {
 
 				// Setup log directory symlinks
 				$helper->status($helper::TWO, "Beginning setup of log file symlinks");
-					// Latest access log
-					// Latest error log
+				$logFileBase = __DIR__ . "/logs/" . $currentDatetime->format("Ymd");
+				// Latest access log
+				if(!file_exists($logFileBase . "-access.log")) {
+					file_put_contents($logFileBase . "-access.log", "");
+				}
+				$success = symlink($logFileBase . "-access.log", __DIR__ . "/logs/access");
+				if($success) {
+					$helper->status($helper::THREE, "Symlink created in the logs directory for the access log called 'access'");
+				} else {
+					$helper->status($helper::THREE, "Failed to create the access log symlink", 'ERROR');
+				}
+
+				// Latest error log
+				if(!file_exists($logFileBase . "-error.log")) {
+					file_put_contents($logFileBase . "-error.log", "");
+				}
+				$success = symlink($logFileBase . "-error.log", __DIR__ . "/logs/error");
+				if($success) {
+					$helper->status($helper::THREE, "Symlink created in the logs directory for the error log called 'error'");
+				} else {
+					$helper->status($helper::THREE, "Failed to create the error log symlink", 'ERROR');
+				}
 
 				// Setup logrotate
 				// Setup cron (if any)

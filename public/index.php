@@ -56,7 +56,7 @@
 	$app->container->singleton('log', function() use ($ApplicationRoot) {
 		$log = new \Monolog\Logger('application');
 		$currentDate = new DateTime();
-		$logNameDate = $currentDate->format("Y-M-d");
+		$logNameDate = $currentDate->format("Ymd");
 		
 		/**
 		 * Add a processor for the format of log lines
