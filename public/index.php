@@ -13,6 +13,18 @@
 	require($ApplicationRoot . "/vendor/autoload.php");
 /* ==================================================================================================== */
 
+/* ====================================== DB Connection ====================================== */
+$db = \Hackstack\Helpers\DatabaseHelper::getInstance();
+/* =========================================================================================== */
+
+/* ====================================== Sentry Setup ====================================== */
+// Alias Sentry to make it easier to work with
+class_alias('Cartalyst\Sentry\Facades\Native\Sentry', 'Sentry');
+
+// Setup Sentry DB resolver
+Sentry::setupDatabaseResolver(Capsule::connection()->getPdo());
+/* ==================================================================================================== */
+
 /* ====================================== Application Setup ====================================== */
 	/**
 	 * Setup and prepare our app with the templates directory
