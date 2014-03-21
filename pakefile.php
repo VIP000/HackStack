@@ -51,6 +51,10 @@ function run_setup() {
 				if(!file_exists($logFileBase . "-access.log")) {
 					file_put_contents($logFileBase . "-access.log", "");
 				}
+
+				if(file_exists(__DIR__ . "/logs/access")) {
+					unlink(__DIR__ . "/logs/access");
+				}
 				$success = symlink($logFileBase . "-access.log", __DIR__ . "/logs/access");
 				if($success) {
 					$helper->status($helper::THREE, "Symlink created in the logs directory for the access log called 'access'");
@@ -62,6 +66,10 @@ function run_setup() {
 				if(!file_exists($logFileBase . "-error.log")) {
 					file_put_contents($logFileBase . "-error.log", "");
 				}
+				
+				if(file_exists(__DIR__ . "/logs/error")) {
+					unlink(__DIR__ . "/logs/error");
+				}
 				$success = symlink($logFileBase . "-error.log", __DIR__ . "/logs/error");
 				if($success) {
 					$helper->status($helper::THREE, "Symlink created in the logs directory for the error log called 'error'");
@@ -71,6 +79,7 @@ function run_setup() {
 
 				// Setup logrotate
 				// Setup cron (if any)
+
 				// Create hackstack.lock
 				file_put_contents(__DIR__ . "/hackstack.lock", "Lock file generated " . $currentDatetime->format("Y-m-d H:i:s"));
 				$helper->status($helper::ONE, "Lockfile generated. Setup completed.");
