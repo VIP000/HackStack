@@ -3,3 +3,12 @@
 	margin: 60px auto;
 	width: 600px;
 }
+
+.error-message {
+	font-size: 1.1em;
+	font-weight: bold;
+	margin: 10px auto;
+	padding: 4px 8px;
+	text-align: center;
+	width: 400px;
+}

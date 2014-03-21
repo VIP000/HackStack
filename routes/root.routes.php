@@ -3,7 +3,7 @@
  * Defines root or core routes for error handling and authentication
  */
 
-/* ====================================== User Authentication ====================================== */
+/* ====================================== Base ====================================== */
 	/**
 	 * Renders the home page
 	 */
@@ -11,6 +11,10 @@
 		// Render index view
 		$app->render('index.twig');
 	});
+/* ================================================================================== */
+
+/* ====================================== User Authentication ====================================== */
+	
 
 	/**
 	 * Renders the sign in page
@@ -49,13 +53,63 @@
 	 * Receives post parameters and signs in if it matches a valid user
 	 */
 	$app->post('/authorize', function() use ($app) {
-		// Authenticate signed in
-			// 	Yes; redirect to user profile
-			// 	No; attempt sign in with given validated parameters
-				// On success, redirect to internal home
-				// On failure, redirect to sign in with failure flash
-		$app->flash("error", "It looks like that wasn't quite right. Try again.");
-		$app->redirect("/signin");
+		// Check if the user is currently signed in
+		if(Sentry::check()) {
+			$user = Sentry::getUser();
+			$app->redirect("/profile/" . $user["username"]);
+		} else {
+			$app->log->debug("User is not logged in");
+
+			$failed = false;
+			$errorMessage = "It looks like that wasn't quite right. Try again.";
+			try {
+				// Set login credentials
+				$credentials = Array(
+					'email'    => filter_var($app->request->post('login'), FILTER_SANITIZE_EMAIL),
+					'password' => strip_tags($app->request->post('password'))
+				);
+
+				$app->log->debug("Login credentials : " . print_r($credentials, true));
+
+				// Try to authenticate the user
+				$user = Sentry::authenticate($credentials, false);
+				$app->log->debug("User : " . print_r($user, true));
+				if(!empty($user)) {
+					$app->redirect("/profile/" . $user["username"]);
+				} else {
+					$failed = true;
+				}
+			} catch (Cartalyst\Sentry\Users\LoginRequiredException $e) {
+				$errorMessage = "Email is required to login.";
+				$failed = true;
+			} catch (Cartalyst\Sentry\Users\PasswordRequiredException $e) {
+				$errorMessage = "Password is required to login.";
+				$failed = true;
+			} catch (Cartalyst\Sentry\Users\WrongPasswordException $e) {
+				$errorMessage = "Sorry, that wasn't quite right. Try again.";
+				$failed = true;
+			} catch (Cartalyst\Sentry\Users\UserNotFoundException $e) {
+				$errorMessage = "Doesn't look like you are registered. You should sign up first.";
+				$failed = true;
+			} catch (Cartalyst\Sentry\Users\UserNotActivatedException $e) {
+				$errorMessage = "You need to confirm your account before you can log in.";
+				$failed = true;
+			} catch (Cartalyst\Sentry\Throttling\UserSuspendedException $e) {
+				$errorMessage = "Looks like you have tried to login too many times without success. Try again later.";
+				$failed = true;
+			} catch (Cartalyst\Sentry\Throttling\UserBannedException $e) {
+				$errorMessage = "Sorry, your account has been suspended.";
+				$failed = true;
+			}
+
+			$app->log->debug("Failed -> " . $failed);
+			$app->log->debug("Error Message -> " . $errorMessage);
+
+			if($failed) {
+				$app->flash("error", $errorMessage);
+				$app->redirect("/signin");
+			}
+		}
 	});
 
 /* ================================================================================================= */

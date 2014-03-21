@@ -11,15 +11,15 @@
 /* ====================================== App Globals & Autoload ====================================== */
 	$ApplicationRoot = dirname(__DIR__);
 	require($ApplicationRoot . "/vendor/autoload.php");
+	use Illuminate\Database\Capsule\Manager as Capsule;
 /* ==================================================================================================== */
-
-/* ====================================== DB Connection ====================================== */
-$db = \Hackstack\Helpers\DatabaseHelper::getInstance();
-/* =========================================================================================== */
 
 /* ====================================== Sentry Setup ====================================== */
 // Alias Sentry to make it easier to work with
 class_alias('Cartalyst\Sentry\Facades\Native\Sentry', 'Sentry');
+
+// Initialize the DB
+\Hackstack\Helpers\DatabaseHelper::getInstance();
 
 // Setup Sentry DB resolver
 Sentry::setupDatabaseResolver(Capsule::connection()->getPdo());
@@ -123,7 +123,7 @@ Sentry::setupDatabaseResolver(Capsule::connection()->getPdo());
 	 * Log the incoming URL request
 	 */
 	$app->log->debug("Requested resource URI is {" . $app->request->getResourceUri() . "}");
-	
+
 	/**
 	 * Loads all *.routes.php files in the routes folder by default as it's safer than dynamically loading
 	 * 
