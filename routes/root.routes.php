@@ -28,11 +28,13 @@
 	 * If the user is signed in, sign them out, otherwise redirect to 403 page
 	 */
 	$app->get('/signout', function() use ($app) {
-		// Authenticate signed in
-		// 	Yes; log them out, redirect to homepage with flash
-		// 	No; redirect to sign in with flash
-		$app->flash("error", "You are not currently signed in");
-		$app->redirect("/signin");
+		if(Sentry::check()) {
+			$app->flash('info', "You are now signed out");
+		}
+
+		// Sentry logout will work even if no user is signed in and should never generate an error or exception
+		Sentry::logout();
+		$app->redirect("/");		
 	});
 
 	/**
