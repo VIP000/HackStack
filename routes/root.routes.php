@@ -15,57 +15,60 @@
 
 /* ====================================== User Authentication ====================================== */
 	
-
 	/**
-	 * Renders the sign in page
+	 * Renders the sign up page for GET requests and accepts user creation parameters for POST
 	 */
-	$app->get('/signin', function() use ($app) {
-		// Render sign in page
-		$app->render('signin.twig');
-	});
-
-	/**
-	 * If the user is signed in, sign them out, otherwise redirect to 403 page
-	 */
-	$app->get('/signout', function() use ($app) {
-		if(Sentry::check()) {
-			$app->flash('info', "You are now signed out");
-		}
-
-		// Sentry logout will work even if no user is signed in and should never generate an error or exception
-		Sentry::logout();
-		$app->redirect("/");		
-	});
-
-	/**
-	 * Renders the forgot password page and accepts a reset request
-	 */
-	$app->map('/forgot', function() use ($app) {
-		// Authenticate signed in
-		// 	Yes; redirect to profile
-		// 	No; render the forgot password page	
+	$app->map('/signup', function() use ($app) {
 		if($app->request->isGet()) {
-			$app->render('forgot_password.twig');
+			// Render sign up page
+			$app->render('signup.twig');
 		} else {
+			try {
+				// Create the user
+				$user = Sentry::createUser(array(
+					'email'     => 'john.doe@example.com',
+					'password'  => 'test',
+					'activated' => true,
+					));
 
+				// Find the group using the group id
+				$adminGroup = Sentry::findGroupById(1);
+
+				// Assign the group to the user
+				$user->addGroup($adminGroup);
+			} catch (Cartalyst\Sentry\Users\LoginRequiredException $e) {
+				echo 'Login field is required.';
+			} catch (Cartalyst\Sentry\Users\PasswordRequiredException $e) {
+				echo 'Password field is required.';
+			} catch (Cartalyst\Sentry\Users\UserExistsException $e) {
+				echo 'User with this login already exists.';
+			} catch (Cartalyst\Sentry\Groups\GroupNotFoundException $e) {
+				echo 'Group was not found.';
+			}
 		}
-	})->via("GET", "POST");
+	})->via('GET', 'POST');	
 
 	/**
-	 * Receives post parameters and signs in if it matches a valid user
+	 * Renders the sign in page for GET requests and accepts user login parameters for POST
 	 */
-	$app->post('/authorize', function() use ($app) {
-		// Check if the user is currently signed in
-		if(Sentry::check()) {
-			$user = Sentry::getUser();
-			if(!empty($user["username"])) {
-				$app->redirect("/profile/" . $user["username"]);
+	$app->map('/signin', function() use ($app) {
+		$failed = false;
+		$errorMessage = "It looks like that wasn't quite right. Try again.";
+
+		if($app->request->isGet()) {
+			// Check if the user is currently signed in and redirect to their profile if so
+			if(Sentry::check()) {
+				$user = Sentry::getUser();
+				if(!empty($user["username"])) {
+					$app->redirect("/profile/" . $user["username"]);
+				} else {
+					$failed = true;
+				}
 			} else {
-				$failed = true;
+				// Render sign in page
+				$app->render('signin.twig');
 			}
 		} else {
-			$failed = false;
-			$errorMessage = "It looks like that wasn't quite right. Try again.";
 			try {
 				// Set login credentials
 				$credentials = Array(
@@ -102,16 +105,43 @@
 				$errorMessage = "Sorry, your account has been suspended.";
 				$failed = true;
 			}
-
-			$app->log->debug("Failed -> " . $failed);
-			$app->log->debug("Error Message -> " . $errorMessage);
-
-			if($failed) {
-				$app->flash("error", $errorMessage);
-				$app->redirect("/signin");
-			}
 		}
+
+		$app->log->debug("Failed -> " . $failed);
+		$app->log->debug("Error Message -> " . $errorMessage);
+
+		if($failed) {
+			$app->flash("error", $errorMessage);
+			$app->redirect("/signin");
+		}
+	})->via('GET', 'POST');
+
+	/**
+	 * If the user is signed in, sign them out, otherwise redirect to 403 page
+	 */
+	$app->get('/signout', function() use ($app) {
+		if(Sentry::check()) {
+			$app->flash('info', "You are now signed out");
+		}
+
+		// Sentry logout will work even if no user is signed in and should never generate an error or exception
+		Sentry::logout();
+		$app->redirect("/");		
 	});
+
+	/**
+	 * Renders the forgot password page and accepts a reset request
+	 */
+	$app->map('/forgot', function() use ($app) {
+		// Authenticate signed in
+		// 	Yes; redirect to profile
+		// 	No; render the forgot password page	
+		if($app->request->isGet()) {
+			$app->render('forgot_password.twig');
+		} else {
+
+		}
+	})->via("GET", "POST");
 
 /* ================================================================================================= */
 
