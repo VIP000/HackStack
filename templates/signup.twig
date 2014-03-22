@@ -1,0 +1,35 @@
+{% extends "base.twig" %}
+
+{# Turn off the sign in button when on the sign up page #}
+{% set show_sign_in = false %}
+
+{% block title %}Come and join us!{% endblock %}
+{% block content %}
+<div class="site clearfix">
+	<div class="context-loader-container" id="site-container">
+		{% if (flash.error is defined) %}
+			<div class="error-message alert alert-danger">{{ flash.error }}</div>
+		{% endif %}
+		<div id="login" class="auth-form">
+			<form method="POST" action="/signup" accept-charset="UTF-8">
+				<div class="auth-form-header">
+					<h1>Sign up</h1>
+				</div>
+				<div class="auth-form-body">
+					<label for="username">Username</label>
+					<input type="text" maxlength="50" tabindex="1" name="username" id="username" class="input-block" autofocus="autofocus" autocapitalize="off">
+					<label for="email">Email Address</label>
+					<input type="text" maxlength="100" tabindex="2" name="email" id="email" class="input-block" autofocus="autofocus" autocapitalize="off">
+					<label for="password">Password <a href="/forgot">(forgot password)</a></label>
+					<input type="password" maxlength="100" tabindex="3" name="password" id="password" class="input-block">
+					<label for="first_name">First Name <small style="color: #BCBCBC;">(optional)</small></label>
+					<input type="text" maxlength="100" tabindex="4" name="first_name" id="first_name" class="input-block" autofocus="autofocus" autocapitalize="off">
+					<label for="last_name">Last Name <small style="color: #BCBCBC;">(optional)</small></label>
+					<input type="text" maxlength="100" tabindex="5" name="last_name" id="last_name" class="input-block" autofocus="autofocus" autocapitalize="off">
+					<input type="submit" value="Sign up" tabindex="6" name="commit" class="button">
+				</div>
+			</form>
+		</div>
+	</div>
+</div>		
+{% endblock %}

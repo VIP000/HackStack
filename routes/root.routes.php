@@ -19,32 +19,132 @@
 	 * Renders the sign up page for GET requests and accepts user creation parameters for POST
 	 */
 	$app->map('/signup', function() use ($app) {
+		$failed = false;
+		$errorMessage = "Sorry, something went wrong. Please try again.";
+
 		if($app->request->isGet()) {
 			// Render sign up page
 			$app->render('signup.twig');
 		} else {
 			try {
-				// Create the user
-				$user = Sentry::createUser(array(
-					'email'     => 'john.doe@example.com',
-					'password'  => 'test',
-					'activated' => true,
-					));
+				$parameters = Array(
+					// Default to not requiring the user to be authorized manually
+					'activated' => true
+				);
 
-				// Find the group using the group id
-				$adminGroup = Sentry::findGroupById(1);
+				// Check that no punctuation exists but allow unicode characters
+				// preg_filter will return null if there are no matches, which is what we want to verify so that the value we use matches the one entered by the user
+				$filterCheckUsername = preg_filter('/[\pP+]/u', '', trim($app->request->post("username")));
+				if(empty($filterCheckUsername)) {
+					$username = filter_var(trim($app->request->post("username")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_ENCODE_HIGH);
+					if(!empty($username)) {
+						$parameters["username"] = $username;
+					} else {
+						$errorMessage = "You must choose a Username to signup.";
+						$failed = true;
+					}
+				} else {
+					$errorMessage = "Sorry, Username cannot contain any punctuation characters.";
+					$failed = true;
+				}
 
-				// Assign the group to the user
-				$user->addGroup($adminGroup);
+				// Filter email using the the default filter
+				if(!$failed) {
+					$trimmedEmail = trim($app->request->post("email"));
+					if(!empty($trimmedEmail)) {
+						$filteredEmail = filter_var($trimmedEmail, FILTER_SANITIZE_EMAIL);
+						if(!empty($filteredEmail)) {
+							$parameters["email"] = $filteredEmail;
+						} else {
+							$errorMessage = "Sorry, that email is not valid or contains invalid characters.";
+							$failed = true;
+						}
+					} else {
+						$errorMessage = "You must provide an Email Address to signup.";
+						$failed = true;
+					}
+				}
+
+				// Filter password, allowing letters, numbers, and punctuation
+				if(!$failed) {
+					$trimmedPassword = trim($app->request->post('password'));
+					if(!empty($trimmedPassword)) {
+						$filteredPassword = filter_var($trimmedPassword, FILTER_SANITIZE_URL);
+						if(!empty($filteredPassword)) {
+							$parameters["password"] = $filteredPassword;
+						} else {
+							$errorMessage = "Sorry, your password must only consist of letters, numbers, and punctuation.";
+							$failed = true;
+						}
+					} else {
+						$errorMessage = "You must choose a Password to signup.";
+						$failed = true;
+					}
+				}
+
+				// Check that no punctuation except dashes exists, but allow unicode characters
+				// preg_filter will return null if there are no matches, which is what we want to verify so that the value we use matches the one entered by the user
+				if(!$failed) {
+					$filterCheckFirstName = preg_filter('/[^\P{P}-]+/u', '', trim($app->request->post("first_name")));
+					if(empty($filterCheckFirstName)) {
+						$firstName = filter_var(trim($app->request->post("first_name")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_ENCODE_HIGH);
+						if(!empty($firstName)) {
+							$parameters["first_name"] = $firstName;
+						}
+					} else {
+						$errorMessage = "Sorry, First Name cannot contain any punctuation characters besides hyphens.";
+						$failed = true;
+					}
+				}
+
+				// Check that no punctuation except dashes exists, but allow unicode characters
+				// preg_filter will return null if there are no matches, which is what we want to verify so that the value we use matches the one entered by the user
+				if(!$failed) {
+					$filterCheckLastName = preg_filter('/[^\P{P}-]+/u', '', trim($app->request->post("last_name")));
+					if(empty($filterCheckLastName)) {
+						$lastName = filter_var(trim($app->request->post("last_name")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_ENCODE_HIGH);
+						if(!empty($lastName)) {
+							$parameters["last_name"] = $lastName;
+						}
+					} else {
+						$errorMessage = "Sorry, Last Name cannot contain any punctuation characters besides hyphens.";
+						$failed = true;
+					}
+				}
+
+				if(!$failed) {
+					// Create the user
+					$user = Sentry::createUser($parameters);
+
+					// // Find the general Users group using the group name
+					// $userGroup = Sentry::findGroupByName('Users');
+
+					// // Assign the group to the user
+					// $user->addGroup($userGroup);
+
+					$app->flash('info', "Welcome <b>" . $parameters["first_name"] . " " . $parameters["first_name"] . "</b> to hackstack!");
+					$app->redirect("/profile/" . $parameters["username"]);
+				}
 			} catch (Cartalyst\Sentry\Users\LoginRequiredException $e) {
-				echo 'Login field is required.';
+				$errorMessage = "You need to provide an email in order to signup.";
+				$failed = true;
 			} catch (Cartalyst\Sentry\Users\PasswordRequiredException $e) {
-				echo 'Password field is required.';
+				$errorMessage = "A password is required to signup.";
+				$failed = true;
 			} catch (Cartalyst\Sentry\Users\UserExistsException $e) {
-				echo 'User with this login already exists.';
+				$errorMessage = "Sorry that email is already taken. Perhaps you already have an account?";
+				$failed = true;
 			} catch (Cartalyst\Sentry\Groups\GroupNotFoundException $e) {
-				echo 'Group was not found.';
+				$failed = true;
 			}
+		}
+
+		$app->log->debug("[signup] Failed -> " . $failed);
+		$app->log->debug("[signup] Error Message -> " . $errorMessage);
+
+		if($failed) {
+			$app->flash("error", $errorMessage);
+			$app->redirect("/signup");
 		}
 	})->via('GET', 'POST');	
 
@@ -72,16 +172,24 @@
 			try {
 				// Set login credentials
 				$credentials = Array(
-					'email'    => filter_var($app->request->post('login'), FILTER_SANITIZE_EMAIL),
-					'password' => strip_tags($app->request->post('password'))
+					'email'    => filter_var($app->request->post('email'), FILTER_SANITIZE_EMAIL),
+					'password' => filter_var($app->request->post('password'), FILTER_SANITIZE_URL)
 				);
 
-				// Try to authenticate the user
-				$user = Sentry::authenticate($credentials, false);
-				if(!empty($user)) {
-					$app->redirect("/profile/" . $user["username"]);
-				} else {
+				if($credentials['email'] === false) {
+					$errorMessage = "You provided an invalid email address. Please try again.";
 					$failed = true;
+				} else if($credentials['password'] === false) {
+					$errorMessage = "You provided a password with invalid characters or length. Please try again.";
+					$failed = true;
+				} else {
+					// Try to authenticate the user
+					$user = Sentry::authenticate($credentials, false);
+					if(!empty($user)) {
+						$app->redirect("/profile/" . $user["username"]);
+					} else {
+						$failed = true;
+					}
 				}
 			} catch (Cartalyst\Sentry\Users\LoginRequiredException $e) {
 				$errorMessage = "Email is required to login.";
@@ -107,8 +215,8 @@
 			}
 		}
 
-		$app->log->debug("Failed -> " . $failed);
-		$app->log->debug("Error Message -> " . $errorMessage);
+		$app->log->debug("[signin] Failed -> " . $failed);
+		$app->log->debug("[signin] Error Message -> " . $errorMessage);
 
 		if($failed) {
 			$app->flash("error", $errorMessage);
@@ -130,7 +238,7 @@
 	});
 
 	/**
-	 * Renders the forgot password page and accepts a reset request
+	 * Renders the forgot password page for GET requests and accepts a reset request for POST requests
 	 */
 	$app->map('/forgot', function() use ($app) {
 		// Authenticate signed in
