@@ -58,10 +58,12 @@
 		// Check if the user is currently signed in
 		if(Sentry::check()) {
 			$user = Sentry::getUser();
-			$app->redirect("/profile/" . $user["username"]);
+			if(!empty($user["username"])) {
+				$app->redirect("/profile/" . $user["username"]);
+			} else {
+				$failed = true;
+			}
 		} else {
-			$app->log->debug("User is not logged in");
-
 			$failed = false;
 			$errorMessage = "It looks like that wasn't quite right. Try again.";
 			try {
@@ -71,11 +73,8 @@
 					'password' => strip_tags($app->request->post('password'))
 				);
 
-				$app->log->debug("Login credentials : " . print_r($credentials, true));
-
 				// Try to authenticate the user
 				$user = Sentry::authenticate($credentials, false);
-				$app->log->debug("User : " . print_r($user, true));
 				if(!empty($user)) {
 					$app->redirect("/profile/" . $user["username"]);
 				} else {
