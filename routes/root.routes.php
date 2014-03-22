@@ -20,7 +20,7 @@
 	 * Renders the sign in page
 	 */
 	$app->get('/signin', function() use ($app) {
-		// Render index view
+		// Render sign in page
 		$app->render('signin.twig');
 	});
 
