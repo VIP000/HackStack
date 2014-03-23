@@ -34,7 +34,7 @@ function run_setup() {
 			Capsule::statement("CREATE DATABASE hackstack;");
 
 			$helper->status($helper::THREE, "Starting Sentry setup");
-			if(file_exists($root . "/vendor/cartalyst/Sentry/schema/mysql.sql")) {
+			if(file_exists($root . "/vendor/cartalyst/sentry/schema/mysql.sql")) {
 				// Run the sentry script
 				Capsule::connection()->getPdo()->exec("USE hackstack;" . file_get_contents($root . "/vendor/cartalyst/sentry/schema/mysql.sql"));
 				$helper->status($helper::THREE, "Sentry tables have been built!");
