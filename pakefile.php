@@ -80,6 +80,57 @@ function run_setup() {
 				// Setup logrotate
 				// Setup cron (if any)
 
+				// Setup self signed cert
+				$helper->status($helper::TWO, "Setting up Apache self-signed cert");
+				// Find the Apache directory
+				$apacheDir = "";
+				$sitesLocation = "";
+				$apacheService = "";
+				$defaultLocation = false;
+				if(file_exists("/etc/apache2") && is_dir("/etc/apache2")) {
+					// Ubuntu and others
+					$apacheDir = "/etc/apache2";
+					$sitesLocation = $apacheDir . "/sites-available";
+					$apacheService = "service apache2";
+					$defaultLocation = true;
+				} else if(file_exists("/etc/apache") && is_dir("/etc/apache")) {
+					$apacheDir = "/etc/apache";
+					$sitesLocation = $apacheDir . "/sites-available";
+					$apacheService = "service apache";
+				} else if(file_exists("/etc/httpd") && is_dir("/etc/httpd")) {
+					$apacheDir = "/etc/httpd";
+					$sitesLocation = $apacheDir . "/conf.d";
+					$apacheService = "service httpd";
+				} else {
+					throw new \Exception("Could not locate the Apache directory. Is it installed?");
+				}
+
+				if(!empty($apacheDir)) {
+					if(!file_exists($apacheDir . "/ssl") || !is_dir($apacheDir . "/ssl")) {
+						pake_superuser_sh("mkdir " . $apacheDir . "/ssl", true);
+					}
+
+					// Generate a key and self-signed cert
+					$publicIp = pake_sh("curl -s http://ipecho.net/plain");
+					$helper->status($helper::THREE, "Your public IP Address is: " . $publicIp, 'INFO');
+					pake_superuser_sh("openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout " . $apacheDir . "/ssl/hackstack.key -out " . $apacheDir . "/ssl/hackstack.crt", true);
+					// Replace the .pem and .crt location references
+					if(!$defaultLocation) {
+						file_put_contents(__DIR__ . "/configuration/scripts/apache/hackstack-ssl.conf", str_replace("/etc/apache2", $apacheDir, file_get_contents(__DIR__ . "/configuration/scripts/apache/hackstack-ssl.conf")));
+					}
+					
+					pake_superuser_sh("a2enmod ssl", true);
+					pake_superuser_sh("cp " . __DIR__ . "/configuration/scripts/apache/hackstack-ssl.conf " . $sitesLocation . "/hackstack-ssl", true);
+					pake_sh("cd " . $sitesLocation);
+					pake_superuser_sh("a2ensite hackstack-ssl", true);
+					pake_superuser_sh($apacheService . " restart", true);
+					$helper->status($helper::THREE, "Setup an apache virtual host with self-signed cert");
+					$helper->status($helper::FOUR, "You need to enable your apache config to listen on port 443.", 'INFO');
+					$helper->status($helper::FOUR, "Add these two lines to your ports.conf or httpd.conf in " . $apacheDir, 'INFO');
+					$helper->status($helper::FIVE, "NameVirtualHost *:443", 'INFO');
+					$helper->status($helper::FIVE, "Listen 443", 'INFO');
+				}
+
 				// Create hackstack.lock
 				file_put_contents(__DIR__ . "/hackstack.lock", "Lock file generated " . $currentDatetime->format("Y-m-d H:i:s"));
 				$helper->status($helper::ONE, "Lockfile generated. Setup completed.");
