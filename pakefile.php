@@ -121,7 +121,9 @@ function run_setup() {
 					
 					pake_superuser_sh("a2enmod ssl", true);
 					pake_superuser_sh("cp " . __DIR__ . "/configuration/scripts/apache/hackstack-ssl.conf " . $sitesLocation . "/hackstack-ssl", true);
+					pake_superuser_sh("cp " . __DIR__ . "/configuration/scripts/apache/hackstack-redirect.conf " . $sitesLocation . "/hackstack-redirect", true);
 					pake_sh("cd " . $sitesLocation);
+					pake_superuser_sh("a2ensite hackstack-redirect", true);
 					pake_superuser_sh("a2ensite hackstack-ssl", true);
 					pake_superuser_sh($apacheService . " restart", true);
 					$helper->status($helper::THREE, "Setup an apache virtual host with self-signed cert");
