@@ -36,7 +36,7 @@ function run_setup() {
 			$helper->status($helper::THREE, "Starting Sentry setup");
 			if(file_exists($root . "/vendor/cartalyst/Sentry/schema/mysql.sql")) {
 				// Run the sentry script
-				Capsule::connection()->getPdo()->exec("USE hackstack;" . file_get_contents($root . "/vendor/cartalyst/Sentry/schema/mysql.sql"));
+				Capsule::connection()->getPdo()->exec("USE hackstack;" . file_get_contents($root . "/vendor/cartalyst/sentry/schema/mysql.sql"));
 				$helper->status($helper::THREE, "Sentry tables have been built!");
 
 				$helper->status($helper::THREE, "Adding username support to Sentry. You can make this the default login identifier in the Sentry config file.");
