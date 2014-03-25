@@ -6,7 +6,7 @@
 /**
  * If the user is signed in, sign them out, otherwise redirect to 403 page
  */
-$app->get('/profile/:username', function($username) {
+$app->get('/profile/:username', function($username) use($app) {
 	if(Sentry::check()) {
 		$app->render("users/profile.twig");
 	}
