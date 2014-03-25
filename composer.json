@@ -23,7 +23,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"Hackstack\\Helpers\\" : "lib/"
+			"Hackstack\\Helpers\\" : "lib/Helpers/"
 		}
 	},
 	"minimum-stability": "stable"
