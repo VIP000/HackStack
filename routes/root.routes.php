@@ -241,11 +241,8 @@
 	 * Renders the forgot password page for GET requests and accepts a reset request for POST requests
 	 */
 	$app->map('/forgot', function() use ($app) {
-		// Authenticate signed in
-		// 	Yes; redirect to profile
-		// 	No; render the forgot password page	
 		if($app->request->isGet()) {
-			$app->render('forgot_password.twig');
+			$app->render('forgot.twig');
 		} else {
 
 		}
