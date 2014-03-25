@@ -9,4 +9,5 @@ return array(
     $vendorDir . '/illuminate/support/Illuminate/Support/helpers.php',
     $vendorDir . '/ircmaxell/password-compat/lib/password.php',
     $vendorDir . '/indeyets/pake/lib/pake/autoload.php',
+    $vendorDir . '/swiftmailer/swiftmailer/lib/swift_required.php',
 );

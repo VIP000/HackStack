@@ -19,7 +19,8 @@
 		"cartalyst/sentry": "2.0.*",
 		"illuminate/database": "4.0.*",
 		"ircmaxell/password-compat": "1.0.*",
-		"indeyets/pake": "~1.99"
+		"indeyets/pake": "~1.99",
+		"swiftmailer/swiftmailer": "@stable"
 	},
 	"autoload": {
 		"psr-4": {
