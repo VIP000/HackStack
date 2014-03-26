@@ -11,7 +11,7 @@ abstract class Helper {
 	 * Instance of the singleton helper
 	 * @var instance HackStackHelper
 	 */
-	private static $HelperInstance;
+	private static $HelperInstances;
 
 	/**
 	 * Directory path to the hackstack application root
@@ -28,12 +28,13 @@ abstract class Helper {
 	 * @return extension of \Hackstack\Helpers\Helper
 	 */
 	public static function getInstance() {
-		if(is_null(self::$HelperInstance)) {
-			$class = get_called_class();
-			self::$HelperInstance = new $class();
+		$classname = get_called_class();
+
+		if(!isset(self::$HelperInstances[$classname])) {
+			self::$HelperInstances[$classname] = new $classname();
 		}
 
-		return self::$HelperInstance;
+		return self::$HelperInstances[$classname];
 	}
 
 }
