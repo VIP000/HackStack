@@ -5,7 +5,7 @@ namespace Hackstack\Helpers;
 /**
  * Internal singleton class that provides some useful helpers and config
  */
-class PakeHelper {
+class PakeHelper extends \Hackstack\Helpers\Helper {
 
 	/**
 	 * Constants to control the status message spacing multipliers
@@ -16,32 +16,8 @@ class PakeHelper {
 	const FOUR = 6;
 	const FIVE = 8;
 
-	/**
-	 * Instance of the singleton helper
-	 * @var instance HackStackHelper
-	 */
-	private static $instance;
-
-	/**
-	 * Directory path to the hackstack application root
-	 * @var String
-	 */
-	private $AppRoot;
-
-	private function __construct() {
-		$this->AppRoot = dirname(dirname(__DIR__));
-	}
-
-	/**
-	 * Returns the current instance and initializes a new one if it doesnt exist
-	 * @return HackStackHelper
-	 */
-	public static function getInstance() {
-		if(is_null(self::$instance)) {
-			self::$instance = new self();
-		}
-
-		return self::$instance;
+	protected function __construct() {
+		parent::__construct();
 	}
 
 	/**
@@ -49,7 +25,7 @@ class PakeHelper {
 	 * @return String
 	 */
 	public function getAppRoot() {
-		return $this->AppRoot;
+		return self::$AppRoot;
 	}
 
 	/**
