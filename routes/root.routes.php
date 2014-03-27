@@ -244,9 +244,61 @@
 		if($app->request->isGet()) {
 			$app->render('forgot.twig');
 		} else {
+			try {
+				$requestedEmail = $app->request->post('email');
+				if(!empty($requestedEmail)) {
+					// Pull the email address being requested
+					$email = filter_var($requestedEmail, FILTER_SANITIZE_EMAIL);
 
+					if(!empty($email)) {
+						// Find the user for the given email address
+						$user = Sentry::findUserByLogin($email);
+
+						// Get the password reset code
+						$resetCode = $user->getResetPasswordCode();
+
+						$view = $app->view();
+						$view->setData('user', $user);
+						$view->setData('reset_url', $app->urlFor('reset', Array('code' => $resetCode)));
+						// Render the email body to be sent
+						$body = $view->render("emails/reset_password.twig");
+
+						$mailer = \Hackstack\Helpers\MailServiceHelper::getInstance();
+						$sent = $mailer->message($email, "Hackstack - Reset your Password", $body);
+
+						if($sent === 1) {
+							$app->flash('info', "You should receive a link to reset your password shortly.");
+							$app->redirect("/signin");
+						} else {
+							$app->flash('error', "Something went wrong with your request. Please try again.");
+							$app->redirect("/forgot");
+						}
+					} else {
+						$app->redirect("/");
+					}
+				} else {
+					$app->flash('error', "You need to provide your email to reset your password.");
+					$app->redirect("/forgot");	
+				}
+			} catch (Cartalyst\Sentry\Users\UserNotFoundException $e) {
+				$app->flash('info', "It looks like you don't have an account. How about signing up?");
+				$app->redirect("/signup");
+			}
 		}
 	})->via("GET", "POST");
+
+	/**
+	 * Renders the forgot password page for GET requests and accepts a reset request for POST requests
+	 */
+	$app->get('/reset(/:code)', function($code) use ($app) {
+		if($app->request->isGet()) {
+			$app->render('reset.twig', Array(
+				'code' => $code
+			));
+		} else {
+
+		}
+	})->via("GET", "POST")->name("reset");
 
 /* ================================================================================================= */
 

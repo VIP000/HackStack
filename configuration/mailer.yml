@@ -1,0 +1,9 @@
+
+development:
+    host: <your email host>
+    port: 465
+    username: <your username>
+    password: <your password>
+    sender:
+        name: <your sender name>
+        email: <your sender email>

@@ -1,0 +1,26 @@
+{% extends "base.twig" %}
+
+{# Turn off the sign in button when already on the page #}
+{% set show_sign_in = false %}
+
+{% block title %}Change your password{% endblock %}
+{% block content %}
+<div class="site clearfix">
+	<div class="context-loader-container" id="site-container">
+		<div id="login" class="auth-form">
+			<form method="POST" action="/reset" accept-charset="UTF-8">
+				<div class="auth-form-header">
+					<h1>Reset password</h1>
+				</div>
+				<div class="auth-form-body">
+					<label for="email">Enter a new password</label>
+					<input type="text" tabindex="1" name="password_first" id="password_first" class="input-block" autofocus="autofocus" autocapitalize="off" />
+					<input type="text" tabindex="2" name="password_second" id="password_second" class="input-block" autofocus="autofocus" autocapitalize="off" />
+					<input type="hidden" value="{{ reset_code }}" name="reset_code" id="reset_code" autocapitalize="off" />
+					<input type="submit" value="Update password" tabindex="3" name="commit" class="button" />
+				</div>
+			</form>
+		</div>
+	</div>
+</div>		
+{% endblock %}
