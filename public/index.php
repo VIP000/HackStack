@@ -15,14 +15,14 @@
 /* ==================================================================================================== */
 
 /* ====================================== Sentry Setup ====================================== */
-// Alias Sentry to make it easier to work with
-class_alias('Cartalyst\Sentry\Facades\Native\Sentry', 'Sentry');
+	// Alias Sentry to make it easier to work with
+	class_alias('Cartalyst\Sentry\Facades\Native\Sentry', 'Sentry');
 
-// Initialize the DB
-\Hackstack\Helpers\DatabaseHelper::getInstance();
+	// Initialize the DB
+	\Hackstack\Helpers\DatabaseHelper::getInstance();
 
-// Setup Sentry DB resolver
-Sentry::setupDatabaseResolver(Capsule::connection()->getPdo());
+	// Setup Sentry DB resolver
+	Sentry::setupDatabaseResolver(Capsule::connection()->getPdo());
 /* ==================================================================================================== */
 
 /* ====================================== Application Setup ====================================== */
@@ -36,6 +36,10 @@ Sentry::setupDatabaseResolver(Capsule::connection()->getPdo());
 		)
 	);
 /* =============================================================================================== */
+
+/* ====================================== CSRF Setup ====================================== */
+	$app->add(new \Slim\Extras\Middleware\CsrfGuard());};
+/* ======================================================================================== */
 
 /* ====================================== Default Event Handlers ====================================== */
 	/**

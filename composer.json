@@ -15,6 +15,7 @@
 		"monolog/monolog": "1.*",
 		"slim/slim": "2.*",
 		"slim/views": "0.*",
+		"slim/extras": "2.0.*",
 		"twig/twig": "1.*",
 		"cartalyst/sentry": "2.0.*",
 		"illuminate/database": "4.0.*",
