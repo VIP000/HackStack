@@ -4,10 +4,12 @@
  */
 
 /**
- * If the user is signed in, sign them out, otherwise redirect to 403 page
+ * View a user profile
  */
 $app->get('/profile/:username', function($username) use($app) {
 	if(Sentry::check()) {
 		$app->render("users/profile.twig");
+	} else {
+		$app->redirect('/403');
 	}
 });
