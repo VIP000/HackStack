@@ -24,13 +24,16 @@ HackStack is built on the shoulders of giants and uses a number of libraries:
     * [Monolog](https://github.com/Seldaek/monolog) for logging
     * [Twig](https://github.com/fabpot/Twig) for templating
     * [Slim-Views](https://github.com/codeguy/Slim-Views) for rendering Twig templates
-* [Normalize](https://github.com/necolas/normalize.css) for making CSS work consistently in different browsers
+* [Slim-Extras](https://github.com/codeguy/Slim-Extras) for some basic Slim middleware, including:
+    * [CSRFGuard](https://github.com/codeguy/Slim-Extras/blob/master/Middleware/CsrfGuard.php) for handling and checking CSRF tokens
+* [SwiftMailer](https://github.com/swiftmailer/swiftmailer) for handling email delivery
 * [Bootstrap](https://github.com/twbs/bootstrap) for clean templating and styling
 * [JQuery](https://github.com/jquery/jquery) for bootstrap interactions
 
 Additionally, the following services and other attributions have contributed:
 
-* [Bootstrap CDN](http://www.bootstrapcdn.com) for CDN sources of bootstrap and jquery
+* [Bootstrap CDN](http://www.bootstrapcdn.com) for CDN sources of bootstrap styles
+* [CDNJS](http://cdnjs.com/) for CDN sources of bootstrap javascript and jquery
 * [Github](http://www.github.com) for the structure of a number of elements including the sign in element
 * [Simple Line Icon Webfont](http://graphicburger.com/simple-line-icons-webfont/) for awesome clean icons
 
