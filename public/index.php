@@ -120,6 +120,9 @@
 		'autoescape' => true
 	);
 	$app->view->parserExtensions = array(new \Slim\Views\TwigExtension());
+
+	// Set some view parameters that should be present on every template
+	$app->view()->appendData(Array('signed_in' => Sentry::check()));
 /* ======================================================================================= */
 
 /* ====================================== Routes File Loading ====================================== */
