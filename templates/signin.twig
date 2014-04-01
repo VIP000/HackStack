@@ -21,6 +21,7 @@
 					<label for="password">Password <a href="/forgot">(forgot password)</a></label>
 					<input type="password" tabindex="2" name="password" id="password" class="input-block">
 					<input type="submit" value="Sign in" tabindex="3" name="commit" class="button">
+					<input type="hidden" name="{{ csrf_key }}" value="{{ csrf_token }}" />
 				</div>
 			</form>
 		</div>

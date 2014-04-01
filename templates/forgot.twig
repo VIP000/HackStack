@@ -16,6 +16,7 @@
 					<label for="email">Enter the Email Address for your account</label>
 					<input type="text" tabindex="1" name="email" id="email" class="input-block" autofocus="autofocus" autocapitalize="off">
 					<input type="submit" value="Send password reset" tabindex="2" name="commit" class="button">
+					<input type="hidden" name="{{ csrf_key }}" value="{{ csrf_token }}" />
 				</div>
 			</form>
 		</div>

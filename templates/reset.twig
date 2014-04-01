@@ -18,6 +18,7 @@
 					<input type="text" tabindex="2" name="password_second" id="password_second" class="input-block" autofocus="autofocus" autocapitalize="off" />
 					<input type="hidden" value="{{ reset_code }}" name="reset_code" id="reset_code" autocapitalize="off" />
 					<input type="submit" value="Update password" tabindex="3" name="commit" class="button" />
+					<input type="hidden" name="{{ csrf_key }}" value="{{ csrf_token }}" />
 				</div>
 			</form>
 		</div>

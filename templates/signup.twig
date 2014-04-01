@@ -27,6 +27,7 @@
 					<label for="last_name">Last Name <small style="color: #BCBCBC;">(optional)</small></label>
 					<input type="text" maxlength="100" tabindex="5" name="last_name" id="last_name" class="input-block" autofocus="autofocus" autocapitalize="off">
 					<input type="submit" value="Sign up" tabindex="6" name="commit" class="button">
+					<input type="hidden" name="{{ csrf_key }}" value="{{ csrf_token }}" />
 				</div>
 			</form>
 		</div>
