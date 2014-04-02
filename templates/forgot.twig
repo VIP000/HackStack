@@ -7,6 +7,9 @@
 {% block content %}
 <div class="site clearfix">
 	<div class="context-loader-container" id="site-container">
+		{% if (flash.error is defined) %}
+			<div class="error-message alert alert-danger">{{ flash.error }}</div>
+		{% endif %}
 		<div id="login" class="auth-form">
 			<form method="POST" action="/forgot" accept-charset="UTF-8">
 				<div class="auth-form-header">
