@@ -268,7 +268,7 @@
 
 						if($sent === 1) {
 							$app->flash('info', "You should receive a link to reset your password shortly.");
-							$app->redirect("/signin");
+							$app->redirect("/");
 						} else {
 							$app->flash('error', "Something went wrong with your request. Please try again.");
 							$app->redirect("/forgot");
@@ -290,13 +290,69 @@
 	/**
 	 * Renders the forgot password page for GET requests and accepts a reset request for POST requests
 	 */
-	$app->get('/reset(/:code)', function($code) use ($app) {
+	$app->get('/reset(/:code)', function($code = null) use ($app) {
 		if($app->request->isGet()) {
-			$app->render('reset.twig', Array(
-				'code' => $code
-			));
+			if(!empty($code)) {
+				$app->render('reset.twig', Array(
+					'reset_code' => $code
+				));
+			} else {
+				$app->flash('error', "There was a problem with your CSRF token. Please try again.");
+				$app->redirect("/403");
+			}
 		} else {
+			$emailAddress = filter_var($app->request->post('email'), FILTER_SANITIZE_EMAIL);
+			if(!empty($emailAddress)) {
+				try {
+					// Find the user
+					$user = Sentry::findUserByLogin($emailAddress);
 
+					$passwordOne = filter_var($app->request->post('password_first'), FILTER_SANITIZE_URL);
+					$passwordTwo = filter_var($app->request->post('password_second'), FILTER_SANITIZE_URL);
+
+					if(empty($passwordOne)) {
+						$app->flash('error', "You need to provide a new password");
+						$app->redirect("/reset/" . $app->request->post('reset_code'));
+					} else if(empty($passwordTwo)) {
+						$app->flash('error', "The two passwords did not match");
+						$app->redirect("/reset/" . $app->request->post('reset_code'));
+					} else if($passwordOne != $passwordTwo) {
+						$app->flash('error', "The two passwords did not match");
+						$app->redirect("/reset/" . $app->request->post('reset_code'));
+					}
+
+					// Check if the reset password code is valid
+					if($user->checkResetPasswordCode($app->request->post('reset_code'))) {
+						// Attempt to reset the password
+						if($user->attemptResetPassword($app->request->post('reset_code'), $passwordTwo)) {
+							$user = Sentry::authenticate(Array(
+								"email" => $emailAddress,
+								"password" => $passwordTwo
+							), false);
+
+							if(!empty($user)) {
+								$app->flash('info', "Your password has successfully been reset");
+								$app->redirect("/profile/" . $user["username"]);
+							} else {
+								$app->flash('error', "Sorry, resetting your password failed.");
+								$app->redirect("/403");
+							}
+						} else {
+							$app->flash('error', "Sorry, your request failed. Please try again.");
+							$app->redirect("/reset/" . $app->request->post('reset_code'));
+						}
+					} else {
+						$app->flash('error', "Sorry, that's an invalid request.");
+						$app->redirect("/403");
+					}
+				} catch (Cartalyst\Sentry\Users\UserNotFoundException $e) {
+					$app->flash('error', "Sorry, it doesn't look like that was a correct email.");
+					$app->redirect("/403");
+				}
+			} else {
+				$app->flash('error', "You need to provide your email address");
+				$app->redirect("/reset/" . $app->request->post('reset_code'));
+			}
 		}
 	})->via("GET", "POST")->name("reset");
 
