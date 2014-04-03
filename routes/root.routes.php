@@ -116,6 +116,12 @@
 					// Create the user
 					$user = Sentry::createUser($parameters);
 
+					// Sign the user in
+					Sentry::authenticate(Array(
+						"email" => $parameters["email"],
+						"password" => $parameters["password"]
+					), false);
+
 					$view = $app->view();
 					$view->setData('user', $user);
 					$body = $view->render("emails/welcome.twig");
