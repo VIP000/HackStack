@@ -8,7 +8,7 @@
  */
 $app->get('/profile/:username', function($username) use($app) {
 	if(Sentry::check()) {
-		$app->render("users/profile.twig");
+		$app->render("users/profile.twig", Array('user' => Sentry::getUser()));
 	} else {
 		$app->redirect('/403');
 	}
