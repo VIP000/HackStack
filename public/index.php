@@ -78,7 +78,7 @@
 		 * Add a processor for the format of log lines
 		 */
 		$lineFormatter = new \Monolog\Formatter\LineFormatter(
-			"[%datetime%] %level_name% : %message%\n\tcontext: %context%\n\textra data: %extra%\n",
+			"[%datetime%] %level_name% : %message%\n",
 			null,
 			true
 		);
