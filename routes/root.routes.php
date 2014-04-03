@@ -297,7 +297,6 @@
 					'reset_code' => $code
 				));
 			} else {
-				$app->flash('error', "There was a problem with your CSRF token. Please try again.");
 				$app->redirect("/403");
 			}
 		} else {
