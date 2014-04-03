@@ -1,0 +1,12 @@
+{% extends "emails/base.twig" %}
+
+{% block title %}Thanks for joining!{% endblock %}
+{% block content %}
+	<p>
+		Hi <b>{{ user.first_name }} {{ user.last_name }}</b>,
+		<br/><br/>
+		Thanks for joining HackStack! Now you can begin building your own awesome projects and ideas!
+		<br/><br/>
+		<span style="font-size: 12px;">You are awesome!</span>
+	</p>
+{% endblock %}

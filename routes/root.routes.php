@@ -116,14 +116,15 @@
 					// Create the user
 					$user = Sentry::createUser($parameters);
 
-					// // Find the general Users group using the group name
-					// $userGroup = Sentry::findGroupByName('Users');
+					$view = $app->view();
+					$view->setData('user', $user);
+					$body = $view->render("emails/welcome.twig");
 
-					// // Assign the group to the user
-					// $user->addGroup($userGroup);
+					$mailer = \Hackstack\Helpers\MailServiceHelper::getInstance();
+					$sent = $mailer->message($user["email"], "Hackstack - Thanks for Joining!", $body);
 
-					$app->flash('info', "Welcome <b>" . $parameters["first_name"] . " " . $parameters["first_name"] . "</b> to hackstack!");
-					$app->redirect("/profile/" . $parameters["username"]);
+					$app->flash('info', "Welcome <b>" . $user["first_name"] . " " . $user["first_name"] . "</b> to hackstack!");
+					$app->redirect("/profile/" . $user["username"]);
 				}
 			} catch (Cartalyst\Sentry\Users\LoginRequiredException $e) {
 				$errorMessage = "You need to provide an email in order to signup.";
