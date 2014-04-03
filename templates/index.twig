@@ -5,5 +5,28 @@
 
 {% block title %}{% endblock %}
 {% block content %}
-	
+	<h2>HackStack Homepage</h2>	
+	<p>Now that you're up and running, start making it your own! Here is the shortlist</p>
+	<dl class="dl-horizontal">
+		<p>
+			<dt>Routes</dt>
+			<dd>You can add more Slim routes be defining endpoints in any php file named with a <code>.routes.php</code> extension within the <code>routes/</code> directory. These will automatically be loaded when a request occurs. If you define a large number of route files, you may want to do something a bit more complex than the current loading scheme used in <code>index.php</code></dd>
+		</p>
+		<p>
+			<dt>Page Templates</dt>
+			<dd>Extend the <code>base.twig</code> Twig template in the <code>templates/</code> directory to automatically get the navbar and sign-in, sign-out, sign-up buttons. These buttons will automatically change depending on the login status of the user and which page they are on.</dd>
+		</p>
+		<p>
+			<dt>Email Templates</dt>
+			<dd>Extend the <code>base.twig</code> Twig template in the <code>templates/emails/</code> directory to automatically get a good baseline html template that should work in most clients.</dd>
+		</p>
+		<p>
+			<dt>User Authorization</dt>
+			<dd>User authentication (including password resets) is already handled for you, but there are no default permissions groups. You can set these up to have differing permissions levels, say for Users and Admins. You can read more about setting these up in the <a href="https://cartalyst.com/manual/sentry/groups/create">Sentry 2 documentation</a></dd>
+		</p>
+		<p>
+			<dt>Pake Tasks</dt>
+			<dd>Pake is a command line tool for running tasks against your instance of HackStack. You can define more tasks in the <code>pakefile</code> defined in the root directory. To see a list of available tasks with descriptions, you can run <code>./vendor/bin/pake -T</code>. To make using pake easier, you may want to copy that file to <code>/usr/bin</code> as root and make it executable (<code>chmod +x</code>). You'll then be able to run <code>pake -T</code> instead. Running an actual pake task is as easy as running <code>pake {task name}</code></dd>
+		</p>
+	</dl>
 {% endblock %}
