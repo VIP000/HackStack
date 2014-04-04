@@ -20,6 +20,25 @@ Baked in:
        * Sentry provides failed login throttling and other features natively 
 * Cross-browser styling and consistency using Bootstrap
 
+## System Dependencies
+* Apache
+* MySQL
+* [Composer](https://getcomposer.org/)
+
+## Inital Setup
+1. Clone the repository to your server into ```/var/www/```
+2. Change ownership to the apache user and group (or www-data, depending on your OS)
+3. Run a ```composer install`` at the root
+4. Update the ```configuration/databases.yml``` with the parameters needed to connect to your MySQL DB
+5. Use pake to run the setup task by executing ```./vendor/bin/pake setup``` in the root directory
+  * This will perform the following tasks:
+    1. Set up the database and run the Sentry build script to create the Sentry tables for user authentication and authorization
+    2. Create inital log files with symlinks to them called ```access``` and ```error``` in the logs directory
+    3. Add an apache virtual host and set it up with a self-signed SSL certificate
+6. Update the ```configuration/mailer.yml``` for your mailer. MailGun is a really easy one to get up and running with and works in place
+
+* To make using pake easier, you can copy the ```vendor/bin/pake``` file to ```/usr/bin``` so that you can use the ```pake``` command directly
+
 ## Components
 HackStack is built on the shoulders of giants and uses a number of libraries:
 
@@ -41,6 +60,7 @@ Additionally, the following services and other attributions have contributed:
 * [CDNJS](http://cdnjs.com/) for CDN sources of bootstrap javascript and jquery
 * [Github](http://www.github.com) for the structure of a number of elements including the sign in element
 * [Simple Line Icon Webfont](http://graphicburger.com/simple-line-icons-webfont/) for awesome clean icons
+
 
 ## How to Contribute
 
