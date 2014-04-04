@@ -7,13 +7,18 @@ While built with hackathons and MVPs in mind, HackStack uses production ready co
 
 ## Features
 Baked in:
-* Dyanamic URL routing
-* Twig templating with automatic caching
-* Logging with automatic rotation and separate access and error logs
+* RESTful routes
+* Twig templating with automatic caching for both pages and emails
+* Logging with separate access and error logs
 * Pre-configured templates and routing for:
     * 500, 404, and 403 HTTP errors
-    * User authentication
-* Cross-browser styling and consistency
+    * User authentication including built in support for
+       * Sign-up
+       * Sign-in
+       * Sign-out
+       * Forgot password with reset through email
+       * Sentry provides failed login throttling and other features natively 
+* Cross-browser styling and consistency using Bootstrap
 
 ## Components
 HackStack is built on the shoulders of giants and uses a number of libraries:
