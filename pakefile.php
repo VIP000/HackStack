@@ -2,6 +2,7 @@
 
 require(__DIR__ . "/vendor/autoload.php");
 use Illuminate\Database\Capsule\Manager as Capsule;
+use Cartalyst\Sentry\Facades\Native\Sentry as Sentry;
 
 pake_task("default");
 function run_default() {
@@ -42,7 +43,29 @@ function run_setup() {
 				$helper->status($helper::THREE, "Adding username support to Sentry. You can make this the default login identifier in the Sentry config file.");
 				Capsule::connection()->getPdo()->exec("USE hackstack;" . file_get_contents($root . "/configuration/scripts/sql/ADD_USERNAME_SUPPORT_TO_SENTRY.sql"));
 
-				// Prompt to fill with test data
+				$helper->status($helper::THREE, "Setting up the Sentry user groups");
+
+				// Setup Sentry DB resolver
+				Sentry::setupDatabaseResolver(Capsule::connection()->getPdo());
+				
+				// Create the Users group; suppress warning about sending data before session starts
+				@Sentry::createGroup(Array(
+					'name'        => 'Users',
+					'permissions' => Array(
+						'users' => 1
+					)
+				));
+				$helper->status($helper::FOUR, "Created the 'Users' group");
+
+				// Create the Admins group; suppress warning about sending data before session starts
+				@Sentry::createGroup(Array(
+					'name'        => 'Admins',
+					'permissions' => Array(
+						'admins' => 1,
+						'users' => 1
+					)
+				));
+				$helper->status($helper::FOUR, "Created the 'Admins' group");
 
 				// Setup log directory symlinks
 				$helper->status($helper::TWO, "Setting up log file symlinks");
