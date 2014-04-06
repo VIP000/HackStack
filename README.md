@@ -49,7 +49,7 @@ development:
 ```
 
 ## Using Pake
-Pake provides an easy way to build and run tasks. To make using pake easier, you can copy the `vendor/bin/pake` file to `/usr/bin` so that you can use the `pake` command directly. To setup new tasks, just define a function in the pakefile. To create a 'clean' task:
+Pake provides an easy way to build and run tasks. To make using pake easier, you can copy the `vendor/bin/pake` file to `/usr/local/bin` so that you can use the `pake` command directly. To setup new tasks, just define a function in the pakefile. To create a 'clean' task:
 ```php
 pake_task("clean");
 pake_desc("Run the clean task");
