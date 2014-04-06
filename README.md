@@ -36,8 +36,27 @@ Baked in:
     2. Create inital log files with symlinks to them called `access` and `error` in the logs directory
     3. Add an apache virtual host and set it up with a self-signed SSL certificate
 6. Update the `configuration/mailer.yml` for your mailer. MailGun is a really easy one to get up and running with and works in place
+  * A typical Mailgun setup would look like: 
+```yaml
+development:
+    host: smtp.mailgun.org
+    port: 465
+    username: <Mailgun username>
+    password: <Mailgun password>
+    sender:
+        name: <Name of sending user>
+        email: <Mailgun send from Address>
+```
 
-* To make using pake easier, you can copy the `vendor/bin/pake` file to `/usr/bin` so that you can use the `pake` command directly
+## Using Pake
+Pake provides an easy way to build and run tasks. To make using pake easier, you can copy the `vendor/bin/pake` file to `/usr/bin` so that you can use the `pake` command directly. To setup new tasks, just define a function in the pakefile. To create a 'clean' task:
+```php
+pake_task("clean");
+pake_desc("Run the clean task");
+function run_clean() {
+   // Your code for the clean task goes here
+}
+```
 
 ## Components
 HackStack is built on the shoulders of giants and uses a number of libraries:
