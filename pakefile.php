@@ -25,14 +25,32 @@ function run_setup() {
 	if(!file_exists(__DIR__ . "/hackstack.lock")) {
 		$helper->status($helper::TWO, "No lock file found, continuing with first time setup");
 		
+		$defaultAppName = "hackstack";
+		$appConfig = \pakeYaml::loadFile($root . "/configuration/application.yml");
+		if(!empty($appConfig["application"])) {
+			if(!empty($appConfig["application"]["name"])) {
+				# Set the default app name from the configuration
+				$defaultAppName = $appConfig["application"]["name"];
+			}
+		}
+
+		$helper->status($helper::TWO, "Choose an App Name. This will be used for logs, config files, and other named components.");
+		$app_name = pake_input("What should your app name be?", $defaultAppName);
+		
+		$hackstackAppName = strtolower(preg_replace('/\s+/', '-', preg_replace('/[^a-zA-Z\s]*/', '', trim($app_name))));
+		if(empty($hackstackAppName)) {
+			$hackstackAppName = $defaultAppName;
+		}
+		$helper->status($helper::THREE, "App name will be [" . $hackstackAppName . "]");
+
 		// Setup the database
 		$helper->status($helper::TWO, "Looking for configuration file and using to create a database connection");
 		try {
 			$db = \Hackstack\Helpers\DatabaseHelper::getInstance();
-			$helper->status($helper::THREE, "Connection established, dropping the {hackstack} database and rebuilding it");
+			$helper->status($helper::THREE, "Connection established, dropping the {" . $hackstackAppName . "} database and rebuilding it");
 			
-			Capsule::statement("DROP DATABASE hackstack;");
-			Capsule::statement("CREATE DATABASE hackstack;");
+			Capsule::statement("DROP DATABASE '" . $hackstackAppName . "';");
+			Capsule::statement("CREATE DATABASE '" . $hackstackAppName . "';");
 
 			$helper->status($helper::THREE, "Starting Sentry setup");
 			if(file_exists($root . "/vendor/cartalyst/sentry/schema/mysql.sql")) {
