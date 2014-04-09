@@ -46,20 +46,35 @@ function run_setup() {
 		// Setup the database
 		$helper->status($helper::TWO, "Looking for configuration file and using to create a database connection");
 		try {
+			$passwordChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#%&*";
+    		$password = substr(str_shuffle($passwordChars), 0, 25);
+
+    		file_put_contents($root . "/configuration/databases.yml", str_replace(Array("<database>", "<password>"), Array($hackstackAppName, $password), file_get_contents($root . "/configuration/databases.yml")));
+
+    		$helper->status($helper::THREE, "A random password has been set in the configuration/databases.yml file");
+
+    		$helper->status($helper::THREE, "Connection established, dropping the {" . $hackstackAppName . "} database and rebuilding it");
+
+    		$buildAppDatabaseStatements = Array(
+    			"DROP DATABASE IF EXISTS " . $hackstackAppName,
+    			"CREATE DATABASE " . $hackstackAppName,
+    			"GRANT ALL PRIVILEGES ON " . $hackstackAppName . ".* TO 'hackstack'@'localhost' IDENTIFIED BY '" . $password . "'",
+    			"FLUSH PRIVILEGES"
+    		);
+    		// Create the hackstack user and grant them privileges on the DB
+    		file_put_contents($root . "/configuration/scripts/sql/SETUP_USER.sql", implode(";", $buildAppDatabaseStatements));
+			pake_sh("mysql -u root -p < " . $root . "/configuration/scripts/sql/SETUP_USER.sql");
+
 			$db = \Hackstack\Helpers\DatabaseHelper::getInstance();
-			$helper->status($helper::THREE, "Connection established, dropping the {" . $hackstackAppName . "} database and rebuilding it");
-			
-			Capsule::statement("DROP DATABASE '" . $hackstackAppName . "';");
-			Capsule::statement("CREATE DATABASE '" . $hackstackAppName . "';");
 
 			$helper->status($helper::THREE, "Starting Sentry setup");
 			if(file_exists($root . "/vendor/cartalyst/sentry/schema/mysql.sql")) {
 				// Run the sentry script
-				Capsule::connection()->getPdo()->exec("USE hackstack;" . file_get_contents($root . "/vendor/cartalyst/sentry/schema/mysql.sql"));
+				Capsule::connection()->getPdo()->exec("USE '" . $hackstackAppName . "';" . file_get_contents($root . "/vendor/cartalyst/sentry/schema/mysql.sql"));
 				$helper->status($helper::THREE, "Sentry tables have been built!");
 
 				$helper->status($helper::THREE, "Adding username support to Sentry. You can make this the default login identifier in the Sentry config file.");
-				Capsule::connection()->getPdo()->exec("USE hackstack;" . file_get_contents($root . "/configuration/scripts/sql/ADD_USERNAME_SUPPORT_TO_SENTRY.sql"));
+				Capsule::connection()->getPdo()->exec("USE '" . $hackstackAppName . "';" . file_get_contents($root . "/configuration/scripts/sql/ADD_USERNAME_SUPPORT_TO_SENTRY.sql"));
 
 				$helper->status($helper::THREE, "Setting up the Sentry user groups");
 
@@ -154,18 +169,34 @@ function run_setup() {
 					// Generate a key and self-signed cert
 					$publicIp = pake_sh("curl -s http://ipecho.net/plain");
 					$helper->status($helper::THREE, "Your public IP Address is: " . $publicIp, 'INFO');
-					pake_superuser_sh("openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout " . $apacheDir . "/ssl/hackstack.key -out " . $apacheDir . "/ssl/hackstack.crt", true);
+					pake_superuser_sh("openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout " . $apacheDir . "/ssl/" . $hackstackAppName . ".key -out " . $apacheDir . "/ssl/" . $hackstackAppName . ".crt", true);
+					
+					$configSearchTerms = Array();
+					$configReplacements = Array();
+
 					// Replace the .pem and .crt location references
 					if(!$defaultLocation) {
-						file_put_contents(__DIR__ . "/configuration/scripts/apache/hackstack-ssl.conf", str_replace("/etc/apache2", $apacheDir, file_get_contents(__DIR__ . "/configuration/scripts/apache/hackstack-ssl.conf")));
+						$configSearchTerms[] = "/etc/apache2";
+						$configReplacements[] = $apacheDir;
+					}
+
+					// Replace 'hackstack' in the apache config if it's not the configured app name
+					if($hackstackAppName != "hackstack") {
+						$configSearchTerms[] = "hackstack";
+						$configReplacements[] = $hackstackAppName;
+					}
+
+					// Perform any apache config replacements that need to occur
+					if(!empty($configSearchTerms)) {
+						file_put_contents(__DIR__ . "/configuration/scripts/apache/hackstack-ssl.conf", str_replace($configSearchTerms, $configReplacements, file_get_contents(__DIR__ . "/configuration/scripts/apache/hackstack-ssl.conf")));
 					}
 					
 					pake_superuser_sh("a2enmod ssl", true);
-					pake_superuser_sh("cp " . __DIR__ . "/configuration/scripts/apache/hackstack-ssl.conf " . $sitesLocation . "/hackstack-ssl", true);
-					pake_superuser_sh("cp " . __DIR__ . "/configuration/scripts/apache/hackstack-redirect.conf " . $sitesLocation . "/hackstack-redirect", true);
+					pake_superuser_sh("cp " . __DIR__ . "/configuration/scripts/apache/hackstack-ssl.conf " . $sitesLocation . "/" . $hackstackAppName . "-ssl", true);
+					pake_superuser_sh("cp " . __DIR__ . "/configuration/scripts/apache/hackstack-redirect.conf " . $sitesLocation . "/" . $hackstackAppName . "-redirect", true);
 					pake_sh("cd " . $sitesLocation);
-					pake_superuser_sh("a2ensite hackstack-redirect", true);
-					pake_superuser_sh("a2ensite hackstack-ssl", true);
+					pake_superuser_sh("a2ensite " . $hackstackAppName . "-redirect", true);
+					pake_superuser_sh("a2ensite " . $hackstackAppName . "-ssl", true);
 					pake_superuser_sh($apacheService . " restart", true);
 					$helper->status($helper::THREE, "Setup an apache virtual host with self-signed cert");
 					$helper->status($helper::FOUR, "You need to enable your apache config to listen on port 443.", 'INFO');
