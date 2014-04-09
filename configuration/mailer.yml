@@ -1,9 +1,9 @@
 
 development:
-    host: smtp.mailgun.org
+    host: <mail host>
     port: 465
-    username: postmaster@sandbox19246.mailgun.org
-    password: 8nn03-z9d-k7
+    username: <username>
+    password: <password>
     sender:
-        name: HackStack
-        email: hackstack@sandbox19246.mailgun.org
+        name: <Sender Name>
+        email: <sender email>
