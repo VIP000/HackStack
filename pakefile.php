@@ -70,11 +70,11 @@ function run_setup() {
 			$helper->status($helper::THREE, "Starting Sentry setup");
 			if(file_exists($root . "/vendor/cartalyst/sentry/schema/mysql.sql")) {
 				// Run the sentry script
-				Capsule::connection()->getPdo()->exec("USE '" . $hackstackAppName . "';" . file_get_contents($root . "/vendor/cartalyst/sentry/schema/mysql.sql"));
+				Capsule::connection()->getPdo()->exec("USE " . $hackstackAppName . ";" . file_get_contents($root . "/vendor/cartalyst/sentry/schema/mysql.sql"));
 				$helper->status($helper::THREE, "Sentry tables have been built!");
 
 				$helper->status($helper::THREE, "Adding username support to Sentry. You can make this the default login identifier in the Sentry config file.");
-				Capsule::connection()->getPdo()->exec("USE '" . $hackstackAppName . "';" . file_get_contents($root . "/configuration/scripts/sql/ADD_USERNAME_SUPPORT_TO_SENTRY.sql"));
+				Capsule::connection()->getPdo()->exec("USE " . $hackstackAppName . ";" . file_get_contents($root . "/configuration/scripts/sql/ADD_USERNAME_SUPPORT_TO_SENTRY.sql"));
 
 				$helper->status($helper::THREE, "Setting up the Sentry user groups");
 
