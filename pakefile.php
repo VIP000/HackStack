@@ -53,16 +53,20 @@ function run_setup() {
 
     		$helper->status($helper::THREE, "A random password has been set in the configuration/databases.yml file");
 
-    		$helper->status($helper::THREE, "Connection established, dropping the {" . $hackstackAppName . "} database and rebuilding it");
+    		$dropConfirm = pake_input("The next step will drop the {" . $hackstackAppName . "} database if it exists. This will result in total data loss if this is used for anything other than this app. Is this okay?.", "yes");
+    		if(substr(strtolower(trim($dropConfirm)), 0, 1) != 'y') {
+    			throw new \Exception("Answer did not match some form of 'yes' to confirm database could be dropped.");
+    		}
 
+    		$helper->status($helper::THREE, "Dropping the {" . $hackstackAppName . "} database if it exists and rebuilding it then granting privileges to the hackstack user");
     		$buildAppDatabaseStatements = Array(
     			"DROP DATABASE IF EXISTS " . $hackstackAppName,
     			"CREATE DATABASE " . $hackstackAppName,
     			"GRANT ALL PRIVILEGES ON " . $hackstackAppName . ".* TO 'hackstack'@'localhost' IDENTIFIED BY '" . $password . "'",
-    			"FLUSH PRIVILEGES"
+    			"FLUSH PRIVILEGES;"
     		);
     		// Create the hackstack user and grant them privileges on the DB
-    		file_put_contents($root . "/configuration/scripts/sql/SETUP_USER.sql", implode(";", $buildAppDatabaseStatements));
+    		file_put_contents($root . "/configuration/scripts/sql/SETUP_USER.sql", implode(";\n", $buildAppDatabaseStatements));
 			pake_sh("mysql -u root -p < " . $root . "/configuration/scripts/sql/SETUP_USER.sql");
 
 			$db = \Hackstack\Helpers\DatabaseHelper::getInstance();
