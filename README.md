@@ -19,6 +19,12 @@ Baked in:
        * Forgot password with reset through email
        * Sentry provides failed login throttling and other features natively 
 * Cross-browser styling and consistency using Bootstrap
+* First time setup script with:
+    * Database setup for Sentry
+    * Enabling username support for Sentry
+    * Initial log setup with symlinks
+    * Creation of initial Sentry groups
+    * Setup of Apache virtual host with self-signed SSL certificate along with redirect for non-https connections
 
 ## System Dependencies
 * Apache
